@@ -52,8 +52,6 @@ class TrainerController{
       return res.status(500).json({ success: false, message: error, err:'failed' });      
     }
       }
-
-      
 }
 
 

@@ -22,7 +22,7 @@ router.put('/updateitems', verifyJwt, AdminController.updateItems)
 //deleting a news
 router.delete('/deleteitems', verifyJwt, AdminController.deleteItems)
 
-// testing an api
-router.post('/test', verifyJwt, AdminController.test)
+
+
 
 export default router

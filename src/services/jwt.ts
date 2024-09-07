@@ -24,7 +24,7 @@ export const tokenGeneration = (
 export const verifyJwt = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
-
+  
   if (!token) {
     return res.status(401).json({ success: false, message: "Access Denied" });
   }
@@ -33,6 +33,6 @@ export const verifyJwt = (req: Request, res: Response, next: NextFunction) => {
     if (err) {
       return res.status(403).json({ succes: false, message: "invalid token" });
     }
-    next();
+    next(); 
   });
 };

@@ -4,9 +4,12 @@ import { securePassword, verifyPassword } from "../services/Hasing";
 import { tokenGeneration, verifyJwt } from "../services/jwt";
 import AuthService from "../services/AuthService";
 import { Role } from "../services/AuthService";
+import {Roles} from "../services/sharedService"
 import adminServices, { Particular } from "../services/adminServices";
+import sharedServices from "../services/sharedService";
 
 const role:Role = 'user'
+const userRole:Roles = 'user'
 
 class UserController {
 
@@ -55,23 +58,50 @@ class UserController {
     }
   }
 
-  // getting all the exercises, query contains particular (item) name
-  static async getAllExercises(req:Request, res:Response): Promise<Response>{
-    const {item} = req.query
-    // checking item is present
-    if(!item){
-      return res.status(400).json({success:false, message:'particular not found'})
-    }
-    // calling the getitem function in adminServices to execute business logic
-    const result = await adminServices.getAllItems(item as Particular)
-    if(!result.success){
-     return res.status(result.status).json({success:result.success, message:result.message})
-    }
-     return res.status(result.status).json({success:result.success, item:result.items, message:result.message})
-  }
- 
-}
 
+  // post request to add user profile informations
+  static async userProfileCompletion(req:Request, res:Response){
+    const {id} = req.body
+    if(!id){
+     return res.status(400).json({success:false, message:"bad request, id not present"})
+    }
+
+    try {
+      const itemData = adminServices.itemAlign('user', req.body)
+      if(!itemData.success){
+        return res.status(itemData.status).json({success:itemData.success, message:itemData.message})
+      }
+      console.log('called inside', itemData);
+     const result = await sharedServices.profileCompletion(id, userRole, itemData.data)
+     if(!result.success){
+      return res.status(result.status).json({ success: result.success, message: result.message });  
+     }
+     return res.status(result.status).json({ success: result.success, message: result.message });
+    } catch (error) {
+     return res.status(500).json({success: false, message:error})
+    }
+  }
+
+  static async getUserbyId(req:Request, res:Response){
+    const {id} = req.query
+    
+    if(!id){
+      return res.status(400).json({success:false, message:'bad request'})
+    }
+
+    try {
+      const result = await sharedServices.getUserById(id as string)
+      if(!result.success){
+        return res.status(result.status).json({ success: result.success, message: result.message });  
+      }
+      return res.status(result.status).json({ success: result.success, user:result.user, message: result.message });
+    } catch (error) {
+     return res.status(500).json({success: false, message:error})
+    }
+  }
+
+  
+}
 
 
 export default UserController;

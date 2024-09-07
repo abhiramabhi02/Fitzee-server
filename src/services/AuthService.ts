@@ -38,7 +38,7 @@ class AuthService {
     
     const user = await model.findOne({Email:data.email}).exec()
     if(user){
-        return {success:false, message:'user already exists'}
+        return {status:401, success:false, message:'user already exists'}
     }
 
     const hashedPassword = await securePassword(data.password)
@@ -50,7 +50,7 @@ class AuthService {
     })
 
     await newUser.save()
-    return {success:true, message:`${role} registration succesful`}
+    return {status:201, success:true, message:`${role} registration succesful`}
   }
 
   static async Login<T extends Role>(data:{email:string, password:string}, role:T){
@@ -60,7 +60,7 @@ class AuthService {
     const user = await model.findOne({Email:data.email}).exec()
 
     if(!user){
-        return {status:404, success:false, err:'noUser', message:'user not found'}
+        return {status:404, success:false, err:'noUser', message:`${role} not found`}
     }
 
     const isMatch = await verifyPassword(data.password, user.Password)

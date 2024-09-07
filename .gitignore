@@ -3,3 +3,9 @@ node_modules
 
 #environment variables
 .env
+
+#testing files
+__tests__
+
+#testing coverages
+coverage
