@@ -1,34 +1,13 @@
-import Admin from "../models/adminModel";
 import { Request, Response } from "express";
 import AuthService from "../services/AuthService";
 import { Role } from "../services/AuthService";
 import adminServices, { Particular } from "../services/adminServices";
-import { newsInterface } from "../models/newsModel";
-import { exerciseInterface } from "../models/exerciseModel";
 
 
 const role: Role = 'admin'
 
 
 class AdminController {
-
-
-  static async test(req: Request, res: Response): Promise<void> {
-    const { item } = req.body;
-
-    // Call the itemAlign method  
-    const result = adminServices.itemAlign(item, req.body);
-    console.log(result);
-
-    // Check if itemAlign returned an error
-    if (!result.success) {
-      res.status(result.status).json({ success: false, message: result.message });
-      return;
-    }
-
-    // If success, return the success response
-    res.status(result.status).json({ success: true, data: result.data });
-  }
 
   // admin registration contains [name, email, password, cpassword] in the body
     static async Registration(req:Request, res:Response): Promise<Response>{
@@ -89,7 +68,7 @@ class AdminController {
         if(!result.success){
           return res.status(result.status).json({success:result.success, message:result.message})
         }
-        return res.status(result.status).json({success:result.success, news:result.items, message:result.message})
+        return res.status(result.status).json({success:result.success, items:result.items, message:result.message})
        } catch (error) {
          return res.status(500).json({ success: false, message: error, err:'failed' });
        }
@@ -127,13 +106,14 @@ class AdminController {
 
       // delete a document in a collection, calling deleting service
       static async deleteItems(req:Request, res:Response):Promise<Response>{
-        const {id, item} = req.body
+        const {id, item} = req.query
+        
         if(!id){
           return res.status(400).json({ success: false, message: "item Id is not present" });
         }
 
         //executing business logic, the item is particular, such as news, exercise etc
-        const result = await adminServices.deleteItem(id, item as Particular)   
+        const result = await adminServices.deleteItem(id as string, item as Particular)   
         if(!result?.success){
           return res.status(result.status).json({ success: result.success, message: result.message });
         }

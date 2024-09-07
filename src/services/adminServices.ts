@@ -2,13 +2,15 @@ import mongoose, { ObjectId } from "mongoose";
 import Exercise, { exerciseInterface } from "../models/exerciseModel";
 import News, { newsInterface } from "../models/newsModel";
 import Subscription, {SubscriptionInterface} from "../models/subscriptionModel"
+import User, { userInterface } from "../models/userModel"
 
-export type Particular = "exercise" | "news" | "subscription";
+export type Particular = "exercise" | "news" | "subscription" | "user";
 
 type ParticularDocumentMap = {
   exercise: exerciseInterface;
   news: newsInterface;
-  subscription:SubscriptionInterface
+  subscription:SubscriptionInterface,
+  user:userInterface
 };
 
 
@@ -24,6 +26,9 @@ class adminServices {
 
         case "subscription":
           return Subscription as unknown as mongoose.Model<ParticularDocumentMap[T]>;
+
+          case "user":
+            return User as unknown as mongoose.Model<ParticularDocumentMap[T]>;
 
       default: {
         throw new Error("invalid particular");
@@ -98,8 +103,6 @@ class adminServices {
   static async insertItem<T extends Particular>(data:object,particular:T){
     const model = this.getModel(particular)
 
-    
-
     const newItem = new model(data)
     await newItem.save()
     return { status: 201, success: true, message: `${particular} inserted successfully`, item: newItem };
@@ -131,11 +134,7 @@ class adminServices {
         return {status:401, success:false, message:`${particular} deletion failed`}
     }
     return {status:200, success:true, message:`${particular} deleted`}
-   }
-
-   
+   } 
 }
-
-
 
 export default adminServices;
