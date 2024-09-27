@@ -1,6 +1,5 @@
 import mongoose, { Document, model } from "mongoose";
 
-<<<<<<< HEAD
 export interface personalDetails {
   Image: string;
   Gender: string;
@@ -9,8 +8,6 @@ export interface personalDetails {
   Weight: number;
 }
 
-=======
->>>>>>> 88a5251409b6d8f52573a27093772786aa1ae109
 export interface userInterface {
   Name: string;
   Email: string;
