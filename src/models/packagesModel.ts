@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import mongoose, { model } from "mongoose";
 
 export interface PackageInterface {
@@ -41,3 +42,32 @@ const packages = new mongoose.Schema({
 });
 
 export default model<PackageInterface>("packages", packages);
+=======
+import mongoose, { model } from 'mongoose'
+
+export interface PackageInterface{
+    PackageName:string;
+    Description:string
+    Exercises:Array<object>;
+    Subscription:Object
+}
+
+const packages = new mongoose.Schema({
+    Packagename:{
+        type:String,
+        required:true
+    },
+    Description:{
+        type:String
+    },
+    Exercises:{
+        type: Array
+    },
+    Subscription:{
+        type:Object
+    }
+})
+
+export default model<PackageInterface>('packages', packages)
+
+>>>>>>> 88a5251409b6d8f52573a27093772786aa1ae109

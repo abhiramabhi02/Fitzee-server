@@ -70,8 +70,7 @@ class AdminController {
         if(!result.success){
           return res.status(result.status).json({success:result.success, message:result.message})
         }
-        
-        return res.status(result.status).json({success:result.success, items:result.items, message:result.message})
+        return res.status(result.status).json({success:result.success, news:result.items, message:result.message})
        } catch (error) {
          return res.status(500).json({ success: false, message: 'Error fetching items', err:error  });
        }
