@@ -8,7 +8,10 @@ const router = Router();
 router.post("/register", AdminController.Registration);
 
 // login of admin, data contains in body
-router.post("/login", AdminController.login);
+// router.post("/login", AdminController.login);
+router.post("/login", (req,res)=>{
+    res.json({ message: 'CORS is working!' });
+})
 
 //get all news in admin console
 router.get("/getitems", verifyJwt, AdminController.getItems);

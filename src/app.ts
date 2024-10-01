@@ -8,6 +8,8 @@ import adminRoute from "./routes/admin"
 import database from "./config/databaseConnection";
 import {chatService} from "./services/chatService";
 import chatRoute from './routes/chat'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,10 +20,10 @@ chatService.startServer(3001)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({
-  origin: ['https://fitzee.netlify.app', 'https://checkout.razorpay.com'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],  
-  credentials: true  
+  origin: [process.env.client_url as string, 'https://checkout.razorpay.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
 // setting up user route 
