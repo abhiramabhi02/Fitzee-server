@@ -18,7 +18,7 @@ chatService.startServer(3001)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({
-  origin: ['http://localhost:4200', 'https://checkout.razorpay.com'],
+  origin: ['https://fitzee.online', 'https://checkout.razorpay.com'],
   methods: 'GET,POST,PUT,DELETE',
   allowedHeaders: 'Content-Type, Authorization',
 }));
