@@ -1,12 +1,10 @@
-import { query, Request, Response } from "express";
-import User from "../models/userModel";
-import { securePassword, verifyPassword } from "../services/Hasing";
-import { tokenGeneration, verifyJwt } from "../services/jwt";
+import { Request, Response } from "express";
 import AuthService from "../services/AuthService";
 import { Role } from "../services/AuthService";
 import {Roles} from "../services/sharedService"
-import adminServices, { Particular } from "../services/adminServices";
+import adminServices from "../services/adminServices";
 import sharedServices from "../services/sharedService";
+import items from "razorpay/dist/types/items";
 
 const role:Role = 'user'
 const userRole:Roles = 'user'
@@ -76,21 +74,21 @@ class UserController {
      if(!result.success){
       return res.status(result.status).json({ success: result.success, message: result.message });  
      }
-     return res.status(result.status).json({ success: result.success, message: result.message });
+     return res.status(result.status).json({ success: result.success, item:result.item, message: result.message });
     } catch (error) {
      return res.status(500).json({success: false, message:error})
     }
   }
 
   static async getUserbyId(req:Request, res:Response){
-    const {id} = req.query
+    const {id, role} = req.query
     
     if(!id){
       return res.status(400).json({success:false, message:'bad request'})
     }
 
     try {
-      const result = await sharedServices.getUserById(id as string)
+      const result = await sharedServices.getUserById(id as string, role as string)
       if(!result.success){
         return res.status(result.status).json({ success: result.success, message: result.message });  
       }
@@ -100,7 +98,39 @@ class UserController {
     }
   }
 
-  
+  static async getItemsById(req:Request, res:Response){
+    const {item, id} = req.body
+    
+    if(!item || !id){
+      return res.status(400).json({success:false, message:'bad request'})
+    }
+    
+    try {
+      const result = await sharedServices.getParticularById(item, id)
+      if(!result.success){
+        return res.status(result.status).json({ success: result.success, message: result.message });  
+      }
+      return res.status(result.status).json({ success: result.success, items:result.item, message: result.message });
+    } catch (error) {
+      return res.status(500).json({success: false, message:error})
+    }
+  }
+
+  static async userMailVerification(req:Request, res:Response){
+    const {token} = req.query
+
+    try {
+      // executing business logic to verify email of user
+      const result = await AuthService.mailVerification(token as string)
+      if(!result.success){
+        return res.status(result.status).json({ success: result.success, message: result.message });  
+      }
+      // return res.status(result.status).json({ success: result.success, message: result.message });  
+      res.send('<h3>Mail verification successfull please login with your credentials</h3>')
+    } catch (error) {
+      return res.status(500).json({success: false, message:error})
+    }
+  }
 }
 
 

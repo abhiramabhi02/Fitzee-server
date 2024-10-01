@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import razorpayService from "../services/razorpayService";
 import { chatService } from "../services/chatService";
+import sharedServices from "../services/sharedService";
 
 class PaymentController{
     // payment function
@@ -23,7 +24,7 @@ class PaymentController{
 
     // payment verification after making payment in the client
     static async paymentVerify(req:Request, res:Response){
-        const {userId} = req.body
+        const {userId, subscriptionId, packageId} = req.body
         try {
             // business logic for payment verification
             const result =  razorpayService.verifyPayment(req.body)
@@ -31,6 +32,8 @@ class PaymentController{
                 return res.status(result.status).json({success:result.success, message:result.message})
             }
             const newChat = await chatService.createRoom(userId)
+            const subscription = await sharedServices.updateUserSubscription(userId, subscriptionId, packageId)
+            
             return res.status(result.status).json({success:result.success, message:result.message})
         } catch (error) {
             return res.status(500).json({success:false, message:error})

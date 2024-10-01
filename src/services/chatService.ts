@@ -191,7 +191,6 @@ class ChatService {
       { $project: { trainerName: "$Name", chatCount: { $size: "$Chats" } } },
       {$sort:{chatCount:1}},{$limit:1}
     ]);
-    console.log(trainer, 'trainer log sub');
     
     let chat = await Chat.findOne({ UserId: userId, TrainerId: trainer[0]._id });
     if (chat || userId === null) {

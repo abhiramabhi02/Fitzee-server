@@ -1,9 +1,8 @@
-import Trainer from "../models/trainerModel";
 import { Request, Response } from "express";
-import { securePassword, verifyPassword } from "../services/Hasing";
-import { tokenGeneration } from "../services/jwt";
 import AuthService from "../services/AuthService";
 import { Role } from "../services/AuthService";
+import adminServices from "../services/adminServices";
+import { body } from "express-validator";
 
 const role:Role = 'trainer'
 
@@ -52,7 +51,33 @@ class TrainerController{
       return res.status(500).json({ success: false, message: error, err:'failed' });      
     }
       }
-}
+
+      static async setUserDiet(req:Request, res:Response){
+        const {item, UserId } = req.body
+        
+        try {
+                const alignedItems = adminServices.itemAlign(item, req.body)
+                const result = await adminServices.insertItem(alignedItems.data, item)
+                if(!result.success){
+
+                    return res.status(result.status).json({ success: false, message: result.message });
+                }
+                const updateData = {
+                    Diet: result.item._id
+                }
+                const updateUser = await adminServices.updateItem(UserId, updateData, 'user')
+                if(!updateUser.success){
+
+                    return res.status(updateUser.status).json({ success: false, message: updateUser.message });
+                }
+                return res.status(201).json({success:true, message:'diet inserted'})
+            
+        } catch (error) {
+            return res.status(500).json({ success: false, message: error, err:'failed' });      
+        }
+      }
+      
+ }
 
 
 export default TrainerController

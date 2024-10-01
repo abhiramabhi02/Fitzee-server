@@ -2,6 +2,7 @@ import { Router } from "express";
 import TrainerController from "../controllers/trainerController";
 import { verifyJwt } from "../services/jwt";
 import AdminController from "../controllers/adminController";
+import UserController from "../controllers/userController";
 
 const router = Router();
 
@@ -13,5 +14,13 @@ router.post("/login", TrainerController.login);
 
 //get request for fetching user for the trainer contains [item] in query
 router.get("/getitems", verifyJwt, AdminController.getItems);
+
+router.get('/gettrainer', verifyJwt, UserController.getUserbyId)
+
+router.put('/updatetrainer', verifyJwt, AdminController.updateItems)
+
+router.post("/setdiet", verifyJwt, TrainerController.setUserDiet)
+
+router.put("/updatediet", verifyJwt, AdminController.updateItems)
 
 export default router;

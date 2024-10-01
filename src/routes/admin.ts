@@ -13,6 +13,9 @@ router.post("/login", AdminController.login);
 //get all news in admin console
 router.get("/getitems", verifyJwt, AdminController.getItems);
 
+//get request for fetching payment data in admin
+router.get('/getpayments', verifyJwt, AdminController.getPaymentData)
+
 //insert news in admin
 router.post("/insertitems", verifyJwt, AdminController.insertItems);
 

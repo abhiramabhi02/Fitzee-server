@@ -3,18 +3,21 @@ import mongoose, { Document, model } from "mongoose";
 export interface personalDetails {
   Image: string;
   Gender: string;
-  Age: number;
+  Age: string;
   Height: number;
   Weight: number;
 }
 
 export interface userInterface {
+  Verification: any;
   Name: string;
   Email: string;
   Password: string;
-  Subscription: Boolean;
+  Subscription: mongoose.Types.ObjectId;
+  Package: mongoose.Types.ObjectId;
   Verified: Boolean;
-  PersonalDetails:personalDetails
+  PersonalDetails: personalDetails;
+  Diet: mongoose.Types.ObjectId;
 }
 
 const personalDetailsSchema = new mongoose.Schema({
@@ -23,19 +26,19 @@ const personalDetailsSchema = new mongoose.Schema({
   },
   Gender: {
     type: String,
-    required:true
+    required: true,
   },
-  Age:{
-    type:Number,
-    required:true
+  Age: {
+    type: String,
+    required: true,
   },
   Height: {
     type: Number,
-    required:true
+    required: true,
   },
   Weight: {
     type: Number,
-    required:true
+    required: true,
   },
 });
 
@@ -53,16 +56,24 @@ const user = new mongoose.Schema({
     required: true,
   },
   Subscription: {
-    type: Boolean,
-    default: false,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "subscription",
+  },
+  Package:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "packages"
   },
   Verification: {
     type: Boolean,
     default: false,
   },
   PersonalDetails: {
-    type:personalDetailsSchema
-  }
+    type: personalDetailsSchema,
+  },
+  Diet: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "diet",
+  },
 });
 
 export default model<userInterface>("user", user);

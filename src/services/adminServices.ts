@@ -5,8 +5,9 @@ import Subscription, {SubscriptionInterface} from "../models/subscriptionModel"
 import User, { userInterface, personalDetails } from "../models/userModel"
 import Package, { PackageInterface } from "../models/packagesModel";
 import Trainer, {trainerInterface} from "../models/trainerModel"
+import Diet, { dietInterface } from "../models/dietModel";
 
-export type Particular = "exercise" | "news" | "subscription" | "user" | "package" | 'trainer';
+export type Particular = "exercise" | "news" | "subscription" | "user" | "package" | 'trainer' | 'diet';
 
 type ParticularDocumentMap = {
   exercise: exerciseInterface;
@@ -14,13 +15,14 @@ type ParticularDocumentMap = {
   subscription:SubscriptionInterface,
   user:userInterface,
   package:PackageInterface
-  trainer:trainerInterface
+  trainer:trainerInterface,
+  diet:dietInterface
 };
 
 
 class adminServices {
 // get model is used to find the particular to do the operations with rest of the services.
-  private static getModel<T extends Particular>(particular: T) {
+   static getModel<T extends Particular>(particular: T) {
     switch (particular) {
       case "exercise":
         return Exercise as unknown as mongoose.Model<ParticularDocumentMap[T]>;
@@ -39,6 +41,9 @@ class adminServices {
 
             case "trainer":
               return Trainer as unknown as mongoose.Model<ParticularDocumentMap[T]>;
+
+              case "diet":
+                return Diet as unknown as mongoose.Model<ParticularDocumentMap[T]>
 
       default: {
         throw new Error("invalid particular");
@@ -122,6 +127,23 @@ class adminServices {
           break;
         }
 
+        case 'diet':{
+          const {UserId, Calories, Protein, Carbohydrate} = body
+          
+          if(!UserId || !Calories || !Protein || !Carbohydrate){
+              console.log(UserId, Calories, Protein, Carbohydrate, 'data in diet');
+              return {status:400, success:false, message:'All fields are required'}
+            }
+
+            data = {
+              UserId:UserId,
+              Calories:Calories,
+              Protein:Protein,
+              Carbohydrate:Carbohydrate
+            } as dietInterface
+            break
+        }
+
         default:
             return { status: 400, success: false, message: "Invalid item type." };
     }
@@ -188,7 +210,15 @@ class adminServices {
     return {status:202, success:true, message:`${particular} deleted`}
    } 
 
-   
+   static async getPaymentDetails(){
+      const payment = await User.find({Subscription:{$exists:true}})
+      .populate('Subscription')
+      .populate('Package')
+      if(!payment){
+        return {status:404, success:false, message:`No payments found`}
+      }
+      return {status:200, success:true, item:payment, message:`payments fetched`}
+   }
 }
 
 export default adminServices;
