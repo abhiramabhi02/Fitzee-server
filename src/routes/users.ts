@@ -15,7 +15,7 @@ router.get('/mailverification', userController.userMailVerification)
 
 // post request for login contains [url, headers, body]
 router.post('/login', userController.login)
-
+   
 //get request to fetch all the news
 router.get('/getitems', AdminController.getItems)
 
@@ -33,6 +33,11 @@ router.post('/payment', verifyJwt, PaymentController.payment)
 
 // post request for payment verification
 router.post('/paymentverify', verifyJwt, PaymentController.paymentVerify)
+
+//post request for forgot password
+router.post('/forgotpassword', userController.forgotpasswordLink)
+
+router.post('/resetpassword', userController.resetUserPassword)
    
 
 export default router;

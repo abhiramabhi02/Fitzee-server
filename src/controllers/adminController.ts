@@ -60,6 +60,18 @@ class AdminController {
       }
       }
 
+
+      static async getDashboard(req:Request, res:Response){
+        try {
+            const result = await adminServices.getDashboardData()
+            if(result){
+              res.status(result.status).json({success:result.success, items:result.items, message:result.message})
+            }
+        } catch (error) {
+          return res.status(500).json({ success: false, message: error, err:'failed' });      
+        }
+      }
+
       // function to fetch all the documents from the collection 
       // contains item (particular) in req query
       static async getItems(req:Request, res:Response):Promise<Response>{

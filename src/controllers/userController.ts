@@ -131,6 +131,39 @@ class UserController {
       return res.status(500).json({success: false, message:error})
     }
   }
+
+  static async forgotpasswordLink(req:Request, res:Response){
+    const {email} = req.body
+    if(!email){
+      return res.status(400).json({success:false, message:'bad request, email not present'})
+    }
+
+    try {
+      const result = await sharedServices.resetPasswordLink(email)
+      if(!result.success){
+        return res.status(result.status).json({ success: result.success, message: result.message });  
+      }
+      return res.status(result.status).json({ success: result.success, message: result.message });  
+    } catch (error) {
+      return res.status(500).json({success: false, message:error})
+    }
+  }
+
+  static async resetUserPassword(req:Request, res:Response){
+    const {email, password} = req.body
+    if(!email || !password){
+      return res.status(400).json({success:false, message:'bad request'})
+    }
+    try {
+      const result = await sharedServices.resetPassword(email, password)
+      if(!result.success){
+        return res.status(result.status).json({ success: result.success, message: result.message });  
+      }
+      return res.status(result.status).json({ success: result.success, message: result.message });  
+    } catch (error) {
+      return res.status(500).json({success: false, message:error})
+    }
+  }
 }
 
 

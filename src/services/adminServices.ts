@@ -166,11 +166,31 @@ class adminServices {
      return {status:200, success:true, items, message:`${particular} fetched`}
    }
 
-   const items = await model.find({})
+   const items = await model.find({}).sort()
    if(!items){
     return {status:404, success:false, err:'noItems', message:`No ${particular} found`}
    }
    return {status:200, success:true, items, message:`${particular} fetched`}
+  }
+
+  static async getDashboardData(){
+    const user = await User.find({})
+    const trainer = await Trainer.find({})
+    const exercise = await Exercise.find({})
+    const packages = await Package.find({})
+    const subscription = await Subscription.find({})
+    const subscribers = await User.find({Subscription:{$exists:true}})
+
+    const data = {
+      user:user,
+      trainer:trainer, 
+      exercise:exercise,
+      packages:packages,
+      subscription:subscription,
+      subscribers:subscribers
+    }
+
+    return {status:200, success:true, items:data, message:'data fetched'}
   }
 
 

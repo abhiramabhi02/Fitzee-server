@@ -2,8 +2,10 @@ import User, { userInterface } from "../models/userModel";
 import Trainer, { trainerInterface } from "../models/trainerModel";
 import mongoose from "mongoose";
 import adminServices from "./adminServices";
+import { forgotPasswordMail } from "../helpers/mailHelper";
 
 import { Particular } from "./adminServices";
+import { securePassword } from "./Hasing";
 
 export type Roles = "user" | "trainer";
 
@@ -118,6 +120,35 @@ class sharedServices {
       return { status: 404, success: false, message: `${particular} not found` };
     }
     return { status: 200, success: true, item:item, message: `${particular} fetching success` };
+  }
+
+  static async resetPasswordLink(email:string){
+    const user = await User.findOne({Email:email})
+    if(!user){
+      return { status: 404, success: false, message: `user not found` };
+    }
+    const mail = await forgotPasswordMail(email)
+    if(!mail.success){
+      return { status: 500, success: false, message: `mail server error` };
+    }
+    return { status: 200, success: true, message: `mail send` };
+  } 
+
+  static async resetPassword(email:string, password:string){
+    const sPassword = await securePassword(password)
+    if(!sPassword){
+      return { status: 500, success: false, message: `password hashing failed` };
+    }
+    const user = await User.findOneAndUpdate({Email:email},{
+      $set:{
+        Password:sPassword
+      }
+    })
+
+    if(!user){
+      return { status: 401, success: false, message: `updation failed` };
+    }
+    return { status: 200, success: true, message: `updation success` };
   }
 }
 
