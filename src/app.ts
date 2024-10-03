@@ -1,6 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import http, { createServer } from 'http'
+import { Server } from "socket.io";
 
 import userRoute from "./routes/users";
 import trainerRoute from "./routes/trainer"
@@ -12,10 +14,13 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const app = express();
+const server = createServer(app)
 const port = process.env.PORT || 3000;
 
+
+
 database()
-chatService.startServer(3001)
+// chatService.startServer(3001)
   
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -38,7 +43,10 @@ app.use("/admin", adminRoute)
 // setting up chat route
 app.use("/chat", chatRoute) 
 
-app.listen(port, () => {
+chatService.initializeServer(server)
+
+
+server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
