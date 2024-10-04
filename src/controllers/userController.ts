@@ -134,6 +134,8 @@ class UserController {
 
   static async forgotpasswordLink(req:Request, res:Response){
     const {email} = req.body
+    console.log(email, 'emai');
+    
     if(!email){
       return res.status(400).json({success:false, message:'bad request, email not present'})
     }
@@ -151,8 +153,9 @@ class UserController {
 
   static async resetUserPassword(req:Request, res:Response){
     const {email, password} = req.body
+    
     if(!email || !password){
-      return res.status(400).json({success:false, message:'bad request'})
+      return res.status(400).json({success:false, message:'bad request'})  
     }
     try {
       const result = await sharedServices.resetPassword(email, password)

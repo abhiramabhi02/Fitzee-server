@@ -135,7 +135,7 @@ class sharedServices {
   } 
 
   static async resetPassword(email:string, password:string){
-    const sPassword = await securePassword(password)
+    const sPassword = await securePassword(password as string)
     if(!sPassword){
       return { status: 500, success: false, message: `password hashing failed` };
     }

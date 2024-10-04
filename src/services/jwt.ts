@@ -17,7 +17,6 @@ export const tokenGeneration = (
     
     if (payload && secretkey) {
       const token = jwt.sign(payload, secretkey, expires);
-      console.log(token);
       
       return token
   }
