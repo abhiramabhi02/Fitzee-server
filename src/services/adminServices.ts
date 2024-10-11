@@ -151,6 +151,44 @@ class adminServices {
     return { status: 200, success: true, data };
   }
 
+  // align the filters according to the particulars
+  static filterAlign(item:string, body:any):{ status: number, success: boolean, message?: string, filters?: any } {
+    let filters: any = {}
+
+    switch (item){
+      case "user":{
+        const {verification} = body
+        
+        if(verification === undefined || verification === null){
+          return {status:400, success:false, message:"bad request"}
+        }
+        filters = {
+          Verification:verification
+        }
+        break;
+      }
+
+      case "trainer":{
+        const {verification} = body
+        if(verification === undefined || verification === null){
+          return {status:400, success:false, message:"bad request"}
+        }
+        filters = {
+          Verification:verification
+        }
+        break;
+      }
+
+      case "news":{
+        const {status} = body
+      }
+
+      default:
+        return { status: 400, success: false, message: "Invalid item type." };
+    }
+    return { status: 200, success: true, filters };
+   }
+
   // fetch all the documents of a collection
   static async getAllItems<T extends Particular>(particular:T){
    const model = this.getModel(particular)
@@ -158,6 +196,7 @@ class adminServices {
     const items = await model.find({})
     .populate("Exercises")
     .populate("Subscription") 
+    .sort({LastUpdate:-1})
     .exec();
 
     if(!items){
@@ -166,7 +205,15 @@ class adminServices {
      return {status:200, success:true, items, message:`${particular} fetched`}
    }
 
-   const items = await model.find({}).sort()
+   if(particular === 'user' || particular === 'trainer'){
+    const items = await model.find({})
+    if(!items){
+      return {status:404, success:false, err:'noItems', message:`No ${particular} found`}
+     }
+     return {status:200, success:true, items, message:`${particular} fetched`}
+   }
+
+   const items = await model.find({}).sort({LastUpdate:-1})
    if(!items){
     return {status:404, success:false, err:'noItems', message:`No ${particular} found`}
    }
@@ -239,6 +286,22 @@ class adminServices {
       }
       return {status:200, success:true, item:payment, message:`payments fetched`}
    }
+
+   static async applyFilters(particular:Particular, filters:object){
+    // get the correct model to filter
+    const model = this.getModel(particular)
+
+    const filtered = await model.find(filters)
+    if(!filtered){
+      return {status:404, success:false, message:`${particular} not found`}
+    }
+    return {status:200, success:true, items:filtered, message:`filtered ${particular} found`}
+   }
+
+   static async search(particular:Particular, searchString:string){
+    
+   }
+
 }
 
 export default adminServices;

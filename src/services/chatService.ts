@@ -369,8 +369,8 @@ class ChatService {
             Messages: 1,
             UserId: 1,
             TrainerId: 1,
-            "userDetails.Name": 1,
-            "trainerDetails.Name": 1,
+            "userDetails": 1,  
+            "trainerDetails": 1,
           },
         },
       ]);
@@ -401,8 +401,8 @@ class ChatService {
             Messages: 1,
             UserId: 1,
             TrainerId: 1,
-            "userDetails.Name": 1,
-            "trainerDetails.Name": 1,
+            "userDetails": 1,
+            "trainerDetails": 1,
           },
         },
       ]);

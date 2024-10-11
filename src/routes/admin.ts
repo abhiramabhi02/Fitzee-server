@@ -28,4 +28,7 @@ router.put("/updateitems", verifyJwt, AdminController.updateItems);
 //deleting a news
 router.delete("/deleteitems", verifyJwt, AdminController.deleteItems);
 
+//filtering admin listed particulars
+router.post('/applyfilters', AdminController.filterOptions)
+
 export default router;

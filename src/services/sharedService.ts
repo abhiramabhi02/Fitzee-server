@@ -150,6 +150,7 @@ class sharedServices {
     }
     return { status: 200, success: true, message: `updation success` };
   }
+
 }
 
 export default sharedServices;

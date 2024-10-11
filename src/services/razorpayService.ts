@@ -15,7 +15,7 @@ class razorpayService {
       amount: amount * 100,
       currency: "INR",
       receipt: "Receipt#1",
-    };
+    }; 
 
     const order = await instance.orders.create(options);
     if (!order) {
