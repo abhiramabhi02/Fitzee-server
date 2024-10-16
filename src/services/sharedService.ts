@@ -89,7 +89,8 @@ class sharedServices {
   static async updateUserSubscription(
     userId: string,
     subId: string,
-    packageId: string
+    packageId: string,
+    orderId: string
   ) {
     const updated = await User.updateOne(
       { _id: userId },
@@ -97,6 +98,8 @@ class sharedServices {
         $set: {
           Subscription: new mongoose.Types.ObjectId(subId),
           Package: new mongoose.Types.ObjectId(packageId),
+          'Payment.OrderId': orderId,
+          'Payment.Date': Date.now()
         },
         new: true,
       }
@@ -131,7 +134,7 @@ class sharedServices {
     if(!mail.success){
       return { status: 500, success: false, message: `mail server error` };
     }
-    return { status: 200, success: true, message: `mail send` };
+    return { status: 200, success: true, message: `reset password mail send in to your email` };
   } 
 
   static async resetPassword(email:string, password:string){

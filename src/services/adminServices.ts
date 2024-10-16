@@ -298,9 +298,6 @@ class adminServices {
     return {status:200, success:true, items:filtered, message:`filtered ${particular} found`}
    }
 
-   static async search(particular:Particular, searchString:string){
-    
-   }
 
 }
 

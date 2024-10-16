@@ -6,6 +6,7 @@ export interface trainerInterface extends Document {
   Email: string;
   Password: string;
   Verification: Boolean;
+  JoinedDate:Date
 }
 
 const trainer = new mongoose.Schema({
@@ -28,6 +29,10 @@ const trainer = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  JoinedDate:{
+    type:Date,
+    default:Date.now
+  }
 });
 
 export default model<trainerInterface>("trainer", trainer);

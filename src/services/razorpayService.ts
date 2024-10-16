@@ -43,7 +43,7 @@ class razorpayService {
     if(!generatedSignature === razorpay_signature){
         return {status:400, success:false, message:'payment verification failed'}
     }
-    return {status:200, success:true, message:'payment verification success'}
+    return {status:200, success:true, message:'payment Completed'}
   }
 }
 

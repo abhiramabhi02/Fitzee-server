@@ -8,6 +8,11 @@ export interface personalDetails {
   Weight: number;
 }
 
+export interface paymentInterface{
+  OrderId:string,
+  Date:Date
+}
+
 export interface userInterface {
   Verification: any;
   Name: string;
@@ -18,6 +23,8 @@ export interface userInterface {
   Verified: Boolean;
   PersonalDetails: personalDetails;
   Diet: mongoose.Types.ObjectId;
+  Payment: paymentInterface;
+  JoinedDate:Date;
 }
 
 const personalDetailsSchema = new mongoose.Schema({
@@ -41,6 +48,16 @@ const personalDetailsSchema = new mongoose.Schema({
     required: true,
   },
 });
+
+const paymentSchema = new mongoose.Schema({
+  OrderId: {
+    type:String
+  },
+  Date:{
+    type:Date,
+    default:Date.now
+  }
+})
 
 const user = new mongoose.Schema({
   Name: {
@@ -74,6 +91,13 @@ const user = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "diet",
   },
+  Payment:{
+    type:paymentSchema
+  },
+  JoinedDate:{
+    type:Date,
+    default:Date.now
+  }
 });
 
 export default model<userInterface>("user", user);
