@@ -1,5 +1,6 @@
 import User, { userInterface } from "../models/userModel";
 import Trainer, { trainerInterface } from "../models/trainerModel";
+import Exercise, {exerciseInterface} from "../models/exerciseModel"
 import mongoose from "mongoose";
 import adminServices from "./adminServices";
 import { forgotPasswordMail } from "../helpers/mailHelper";
@@ -78,6 +79,8 @@ class sharedServices {
         .populate("Package");
     } else if (role === "trainer") {
       user = await Trainer.findOne({ _id: id });
+    }else if (role === "exercise"){
+      user = await Exercise.findOne({_id:id})
     }
 
     if (!user) {

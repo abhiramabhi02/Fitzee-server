@@ -1,6 +1,7 @@
 import { Router } from "express";
 import AdminController from "../controllers/adminController";
 import { verifyJwt } from "../middlewares/jwt";
+import adminModel from "../models/adminModel";
 
 const router = Router();
 
@@ -30,5 +31,7 @@ router.delete("/deleteitems", verifyJwt, AdminController.deleteItems);
 
 //filtering admin listed particulars
 router.post('/applyfilters', AdminController.filterOptions)
+
+router.post('/getItembyId', verifyJwt, AdminController.getItemById)
 
 export default router;

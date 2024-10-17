@@ -9,7 +9,30 @@ export interface exerciseInterface {
   Status: boolean;
   InsertedDate: Date;
   LastUpdate: Date;
+  AdditionalData:additionalDataInterface;
 }
+
+export interface additionalDataInterface {
+  Level:string;
+  Sets:number;
+  Reps:number
+}
+
+
+const additionalDataSchema = new mongoose.Schema({
+  Level:{
+    type:String,
+    required:true
+  },
+  Sets: {
+    type: Number,
+    default: 3,
+  },
+  Reps: {
+    type: Number,
+    default: 12,
+  },
+})
 
 const exercise = new mongoose.Schema({
   Name: {
@@ -19,14 +42,6 @@ const exercise = new mongoose.Schema({
   Description: {
     type: String,
     required: true,
-  },
-  Sets: {
-    type: Number,
-    default: 3,
-  },
-  Reps: {
-    type: Number,
-    default: 12,
   },
   Image: {
     type: String,
@@ -43,6 +58,9 @@ const exercise = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  AdditionalData:{
+    type: additionalDataSchema
+  }
 });
 
 export default model<exerciseInterface>("exercise", exercise);
