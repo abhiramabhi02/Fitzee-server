@@ -206,7 +206,7 @@ class adminServices {
    }
 
    if(particular === 'user' || particular === 'trainer'){
-    const items = await model.find({})
+    const items = await model.find({}).sort({JoinedDate:-1})
     if(!items){
       return {status:404, success:false, err:'noItems', message:`No ${particular} found`}
      }
@@ -226,7 +226,7 @@ class adminServices {
     const exercise = await Exercise.find({})
     const packages = await Package.find({})
     const subscription = await Subscription.find({})
-    const subscribers = await User.find({Subscription:{$exists:true}})
+    const subscribers = await User.find({Subscription:{$exists:true}}).populate('Subscription')
 
     const data = {
       user:user,

@@ -25,6 +25,10 @@ class PaymentController{
     // payment verification after making payment in the client
     static async paymentVerify(req:Request, res:Response){
         const {userId, subscriptionId, packageId, orderId} = req.body
+        
+        if(!userId || !subscriptionId || !packageId || !orderId){
+            return res.status(400).json({success:false, message:'bad request'})
+        }
         try {
             // business logic for payment verification
             const result =  razorpayService.verifyPayment(req.body)
@@ -33,7 +37,9 @@ class PaymentController{
             }
             const newChat = await chatService.createRoom(userId)
             const subscription = await sharedServices.updateUserSubscription(userId, subscriptionId, packageId, orderId)
-            
+            if(!subscription.success){
+                return res.status(result.status).json({success:result.success, message:result.message})
+            }
             return res.status(result.status).json({success:result.success, message:result.message})
         } catch (error) {
             return res.status(500).json({success:false, message:error})
