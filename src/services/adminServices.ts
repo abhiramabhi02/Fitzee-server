@@ -190,34 +190,41 @@ class adminServices {
    }
 
   // fetch all the documents of a collection
-  static async getAllItems<T extends Particular>(particular:T){
+  static async getAllItems<T extends Particular>(particular:T, page:number, limit:number){
    const model = this.getModel(particular)
+   const skip = (page - 1) * limit
    if(particular === 'package'){
     const items = await model.find({})
     .populate("Exercises")
     .populate("Subscription") 
     .sort({LastUpdate:-1})
+    .skip(skip)
+    .limit(limit)
     .exec();
 
+    const itemCount = await model.find({}).countDocuments()
+    
     if(!items){
       return {status:404, success:false, err:'noItems', message:`No ${particular} found`}
      }
-     return {status:200, success:true, items, message:`${particular} fetched`}
+     return {status:200, success:true, items, itemCount, message:`${particular} fetched`}
    }
 
    if(particular === 'user' || particular === 'trainer'){
-    const items = await model.find({}).sort({JoinedDate:-1})
+    const items = await model.find({}).sort({JoinedDate:-1}).skip(skip).limit(limit)
+    const itemCount = await model.find({}).countDocuments()
     if(!items){
       return {status:404, success:false, err:'noItems', message:`No ${particular} found`}
      }
-     return {status:200, success:true, items, message:`${particular} fetched`}
+     return {status:200, success:true, items, itemCount, message:`${particular} fetched`}
    }
 
-   const items = await model.find({}).sort({LastUpdate:-1})
+   const items = await model.find({}).sort({LastUpdate:-1}).skip(skip).limit(limit)
+   const itemCount = await model.find({}).countDocuments()
    if(!items){
     return {status:404, success:false, err:'noItems', message:`No ${particular} found`}
    }
-   return {status:200, success:true, items, message:`${particular} fetched`}
+   return {status:200, success:true, items, itemCount, message:`${particular} fetched`}
   }
 
   static async getDashboardData(){

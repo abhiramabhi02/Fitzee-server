@@ -4,12 +4,15 @@ import { Document } from "mongoose";
 interface message {
   Message: string;
   SenderId: string;
+  Read:boolean
   TimeStamp: Date;
 }
 
 interface chatInterface extends Document {
   UserId: mongoose.Types.ObjectId;
   TrainerId: mongoose.Types.ObjectId;
+  UserOnline:boolean;
+  TrainerOnline:boolean;
   Messages: message[];
 }
 
@@ -21,6 +24,10 @@ const messageSchema = new mongoose.Schema({
   SenderId: {
     type: String,
     required: true,
+  },
+  Read:{
+    type:Boolean,
+    default: false,
   },
   TimeStamp: {
     type: Date,
@@ -38,6 +45,14 @@ const ChatSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref:"trainer",
     required: true,
+  },
+  UserOnline:{
+    type:Boolean,
+    default:false
+  },
+  TrainerOnline:{
+    type:Boolean,
+    default: false
   },
   Messages: {
     type: [messageSchema],

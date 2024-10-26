@@ -76,20 +76,20 @@ class AdminController {
       // function to fetch all the documents from the collection 
       // contains item (particular) in req query
       static async getItems(req:Request, res:Response):Promise<Response>{
-        const {item} = req.query
+        const {item, page, limit} = req.query
         
        try {
         // executing business logic, calling function
-        const result = await adminServices.getAllItems(item as Particular)
+        const result = await adminServices.getAllItems(item as Particular, Number(page), Number(limit))
         if(!result.success){
           return res.status(result.status).json({success:result.success, message:result.message})
         }
-        return res.status(result.status).json({success:result.success, items:result.items, message:result.message})
+        return res.status(result.status).json({success:result.success, items:result.items, itemCount:result.itemCount, message:result.message})
        } catch (error) {
          return res.status(500).json({ success: false, message: 'Error fetching items', err:error  });
        }
       }
-
+  
       static async getItemById(req:Request, res:Response){
         const {id, role} = req.body
         if(!id || !role){
