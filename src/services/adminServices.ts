@@ -157,30 +157,77 @@ class adminServices {
 
     switch (item){
       case "user":{
-        const {verification} = body
-        
+        const {verification, fromDate, toDate} = body
         if(verification === undefined || verification === null){
           return {status:400, success:false, message:"bad request"}
         }
         filters = {
-          Verification:verification
+          Verification:verification,
+        }
+        if(fromDate && !toDate){
+          filters.JoinedDate = {
+            $gte: new Date(fromDate)
+          }
+        }else if (!fromDate && toDate){
+          filters.JoinedDate = {
+            $lte: new Date(toDate)
+          }
+        }else if(fromDate && toDate){
+          filters.JoinedDate = {
+            $gte: new Date(fromDate),
+            $lte: new Date(toDate)
+          }
         }
         break;
       }
 
       case "trainer":{
-        const {verification} = body
+        const {verification, fromDate, toDate} = body
         if(verification === undefined || verification === null){
           return {status:400, success:false, message:"bad request"}
         }
         filters = {
-          Verification:verification
+          Verification:verification,
+        }
+        if(fromDate && !toDate){
+          filters.JoinedDate = {
+            $gte: new Date(fromDate)
+          }
+        }else if (!fromDate && toDate){
+          filters.JoinedDate = {
+            $lte: new Date(toDate)
+          }
+        }else if(fromDate && toDate){
+          filters.JoinedDate = {
+            $gte: new Date(fromDate),
+            $lte: new Date(toDate)
+          }
         }
         break;
       }
 
       case "news":{
-        const {status} = body
+         const {Status, fromDate, toDate} = body
+        if(Status === undefined || Status === null){
+          return {status:400, success:false, message:"bad request"}
+        }
+        filters = {
+          Status:Status,
+        }
+        if(fromDate && !toDate){
+          filters.InsertedDate = {
+            $gte: new Date(fromDate)
+          }
+        }else if (!fromDate && toDate){
+          filters.InsertedDate = {
+            $lte: new Date(toDate)
+          }
+        }else if(fromDate && toDate){
+          filters.InsertedDate = {
+            $gte: new Date(fromDate),
+            $lte: new Date(toDate)
+          }
+        }
       }
 
       default:

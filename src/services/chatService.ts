@@ -63,34 +63,73 @@ class ChatService {
       });
 
       //user leaving a room
+      // socket.on("leaveRoom", async ({ roomId, role }) => {
+      //   const chat = await Chat.findOne({ _id: roomId });
+
+      //   if (!chat) {
+      //     socket.emit("error", {
+      //       message: "cannot find room",
+      //     });
+      //     return;
+      //   }
+      //   socket.leave(roomId);
+      //   const room = new mongoose.Types.ObjectId(roomId);
+      //   console.log(room, 'room id');
+
+      //   if (role === "user") {
+      //     const onlineUpdation = await Chat.updateOne(
+      //       { _id: room },
+      //       {
+      //         $set: { UserOnline: false },
+      //       }
+      //     );
+      //   } else {
+      //     const onlineUpdation = await Chat.updateOne(
+      //       { _id: room },
+      //       {
+      //         $set: { TrainerOnline: false },
+      //       }
+      //     );
+      //   }
+      //   console.log(`${role} left room ${roomId}`);
+      // });
+
+      // user leaving a room
       socket.on("leaveRoom", async ({ roomId, role }) => {
         const chat = await Chat.findOne({ _id: roomId });
 
         if (!chat) {
           socket.emit("error", {
             message: "cannot find room",
-          });   
-          return;     
-        }    
+          });
+          return;
+        }
+
         socket.leave(roomId);
-        const room = new mongoose.Types.ObjectId(roomId); 
-        console.log(room, 'room id');
-        
+        const room = new mongoose.Types.ObjectId(roomId);
+
+        // Update online status based on role
         if (role === "user") {
-          const onlineUpdation = await Chat.updateOne( 
-            { _id: room },
-            {
-              $set: { UserOnline: false },
-            }
-          );
+          await Chat.updateOne({ _id: room }, { $set: { UserOnline: false } });
         } else {
-          const onlineUpdation = await Chat.updateOne(
+          await Chat.updateOne(
             { _id: room },
-            {
-              $set: { TrainerOnline: false },
-            }
+            { $set: { TrainerOnline: false } }
           );
         }
+
+        // Fetch updated active status from the database
+        const updatedChat = await Chat.findOne({ _id: roomId });
+        const userOnline = updatedChat?.UserOnline || false;
+        const trainerOnline = updatedChat?.TrainerOnline || false;
+
+        // Emit updated active status to all users in the room
+        this.io.to(roomId).emit("receiveChatActive", {
+          role,
+          userOnline,
+          trainerOnline,
+        });
+
         console.log(`${role} left room ${roomId}`);
       });
 
@@ -105,24 +144,25 @@ class ChatService {
         );
 
         //updated Documents Fetching
-        const chat = await Chat.findOne({_id:room})
-        if(!chat){
-          socket.emit("error", {message:"cannot find room"})
+        const chat = await Chat.findOne({ _id: room });
+        if (!chat) {
+          socket.emit("error", { message: "cannot find room" });
         }
-        this.io.to(roomId).emit("receiveUpdates", chat?.Messages)
+        this.io.to(roomId).emit("receiveUpdates", chat?.Messages);
       });
 
-      socket.on("userOnline", async({roomId, role})=>{
+      socket.on("userOnline", async ({ roomId, role }) => {
+        const chatRoom = await Chat.findOne({ _id: roomId });
+        if (!chatRoom) {
+          socket.emit("error", { message: "room not found" });
+        }
 
-        const chatRoom = await Chat.findOne({_id:roomId})
-         if(!chatRoom){
-          socket.emit("error", {message:'room not found'})
-         }
-           
-         const userOnline = chatRoom?.UserOnline
-         const trainerOnline = chatRoom?.TrainerOnline
-        this.io.to(roomId).emit("receiveChatActive", {role, userOnline, trainerOnline})
-      })
+        const userOnline = chatRoom?.UserOnline;
+        const trainerOnline = chatRoom?.TrainerOnline;
+        this.io
+          .to(roomId)
+          .emit("receiveChatActive", { role, userOnline, trainerOnline });
+      });
 
       // Create room
       socket.on("createRoom", async ({ userId, trainerId }) => {
@@ -152,27 +192,30 @@ class ChatService {
         socket.emit("roomCreated", { showData });
       });
 
-      socket.on("privateMessage", async ({ roomId, message, senderId, readStatus }) => {
-        // Broadcast the message to everyone in the room
-        this.io.to(roomId).emit("receiveMessage", {
-          Message: message,
-          SenderId: senderId,
-          Read:readStatus,
-          TimeStamp: new Date(),
-        });
-
-        // Find the chat and save the new message
-        const chat = await Chat.findOne({ _id: roomId });
-        if (chat) {
-          chat.Messages.push({
+      socket.on(
+        "privateMessage",
+        async ({ roomId, message, senderId, readStatus }) => {
+          // Broadcast the message to everyone in the room
+          this.io.to(roomId).emit("receiveMessage", {
             Message: message,
             SenderId: senderId,
-            Read:readStatus, 
+            Read: readStatus,
             TimeStamp: new Date(),
           });
-          await chat.save();
+
+          // Find the chat and save the new message
+          const chat = await Chat.findOne({ _id: roomId });
+          if (chat) {
+            chat.Messages.push({
+              Message: message,
+              SenderId: senderId,
+              Read: readStatus,
+              TimeStamp: new Date(),
+            });
+            await chat.save();
+          }
         }
-      });
+      );
 
       socket.on("typing", ({ roomId, senderRole }) => {
         this.io
